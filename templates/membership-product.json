@@ -1,0 +1,22 @@
+{
+  "name": "Monthly Membership",
+  "description": "Get access to exclusive content, resources, and community.\n\n## What's Included\n\n- Weekly tutorials and guides\n- Private Discord community\n- Early access to new content\n- Download library of resources\n- Monthly Q&A sessions",
+  "price": 999,
+  "currency": "usd",
+  "recurrence": "monthly",
+  "is_tiered_membership": true,
+  "customizable_price": false,
+  "require_shipping": false,
+  "shown_on_profile": true,
+  "custom_permalink": "membership",
+  "custom_summary": "Join our community and get access to exclusive content",
+  "custom_receipt": "Welcome to the membership! 🎉\n\nHere's how to get started:\n\n1. Join the Discord: [link]\n2. Access your member portal: [link]\n3. Check out this month's content\n\nYour membership will automatically renew monthly. You can cancel anytime from your Gumroad library.",
+  "custom_fields": [
+    {
+      "name": "Discord Username",
+      "required": true
+    }
+  ],
+  "subscription_duration": null,
+  "purchase_email": "Welcome to the membership! Check your email for next steps."
+}

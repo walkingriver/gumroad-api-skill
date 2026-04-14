@@ -1,0 +1,64 @@
+{
+  "name": "Physical Product Name",
+  "description": "Description of your physical product.\n\n## Product Details\n\n- Dimensions: 8\" x 10\"\n- Weight: 1.5 lbs\n- Materials: High-quality materials\n- Ships within 3-5 business days",
+  "price": 4900,
+  "currency": "usd",
+  "customizable_price": false,
+  "require_shipping": true,
+  "max_purchase_count": 10,
+  "shown_on_profile": true,
+  "custom_permalink": "physical-product",
+  "custom_summary": "High-quality physical product shipped to your door",
+  "custom_receipt": "Thank you for your order!\n\nYour order will ship within 3-5 business days. You'll receive a tracking number via email once it ships.\n\nIf you have any questions, contact us at support@example.com",
+  "variants": [
+    {
+      "title": "Size",
+      "options": [
+        {
+          "name": "Small",
+          "price_difference": 0
+        },
+        {
+          "name": "Medium",
+          "price_difference": 0
+        },
+        {
+          "name": "Large",
+          "price_difference": 500
+        },
+        {
+          "name": "X-Large",
+          "price_difference": 500
+        }
+      ]
+    },
+    {
+      "title": "Color",
+      "options": [
+        {
+          "name": "Black",
+          "price_difference": 0
+        },
+        {
+          "name": "White",
+          "price_difference": 0
+        },
+        {
+          "name": "Navy",
+          "price_difference": 0
+        },
+        {
+          "name": "Red",
+          "price_difference": 200
+        }
+      ]
+    }
+  ],
+  "custom_fields": [
+    {
+      "name": "Gift message (optional)",
+      "required": false
+    }
+  ],
+  "purchase_email": "Your order has been received and will ship soon!"
+}

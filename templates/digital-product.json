@@ -1,0 +1,44 @@
+{
+  "name": "Your Product Name",
+  "description": "Detailed product description that will appear on the product page. This supports markdown formatting.\n\n- Key feature 1\n- Key feature 2\n- Key feature 3",
+  "price": 2900,
+  "currency": "usd",
+  "customizable_price": true,
+  "suggested_price": 2900,
+  "minimum_price": 1500,
+  "require_shipping": false,
+  "shown_on_profile": true,
+  "custom_permalink": "your-product-slug",
+  "custom_summary": "Short summary that appears in previews and social shares",
+  "custom_receipt": "Thank you for your purchase! Here's how to get started:\n\n1. Download the files\n2. Follow the setup guide\n3. Join our community at [link]",
+  "custom_fields": [
+    {
+      "name": "GitHub Username",
+      "required": false
+    },
+    {
+      "name": "Company Name",
+      "required": false
+    }
+  ],
+  "variants": [
+    {
+      "title": "License Type",
+      "options": [
+        {
+          "name": "Personal License",
+          "price_difference": 0
+        },
+        {
+          "name": "Team License (5 seats)",
+          "price_difference": 5000
+        },
+        {
+          "name": "Enterprise License",
+          "price_difference": 15000
+        }
+      ]
+    }
+  ],
+  "purchase_email": "Optional custom purchase confirmation email content"
+}

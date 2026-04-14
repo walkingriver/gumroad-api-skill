@@ -1,135 +1,263 @@
 ---
 name: gumroad-api
-description: >-
-  Integrates with the Gumroad REST API v2 (OAuth 2.0, products, sales, licenses,
-  subscribers, offer codes, payouts, webhooks). Use when building or debugging
-  Gumroad API calls, scripts, or webhooks; when the user mentions Gumroad API,
-  api.gumroad.com, license verification, or creator storefront automation.
+description: Automates Gumroad creator workflows including product management, sales tracking, license verification, and webhook setup. Use when the user says "Gumroad", "verify license", "list my products", "check sales", "set up webhooks", or asks to build Gumroad integrations or scripts. Handles OAuth authentication and API calls to api.gumroad.com.
 ---
 
-# Gumroad REST API (v2)
+# Gumroad API Integration
 
-## Canonical URLs
+## Required Environment Variables
 
-- **REST base:** `https://api.gumroad.com` (same API is also reachable via `https://gumroad.com/api` for backward compatibility).
-- **API version:** `v2` — all routes are under `/v2/...`.
-- **Human docs:** [gumroad.com/api](https://gumroad.com/api). For a full page index, see [llms.txt](https://mintlify.com/antiwork/gumroad/llms.txt) and [reference.md](reference.md).
+This skill requires the following environment variables to be set:
 
-## Authentication
+**GUMROAD_ACCESS_TOKEN** (required for authenticated API calls)
+- Your personal access token from Gumroad
+- Get it at: [https://app.gumroad.com/settings/advanced#application-form](https://app.gumroad.com/settings/advanced#application-form)
+- Used for: Product management, sales data, webhooks, refunds
+- **Security:** Never commit tokens to version control
 
-Gumroad uses **OAuth 2.0** (Doorkeeper). Obtain **Client ID** and **Client Secret** at [Application settings](https://gumroad.com/settings/applications).
+**GUMROAD_PRODUCT_ID** (optional)
+- Your product ID for license verification workflows
+- Find it in your Gumroad product settings
 
-**Token endpoint:** `POST https://gumroad.com/oauth/token`
+How you set these environment variables is up to you:
+- System environment variables
+- Shell profile (.zshrc, .bashrc, .profile)
+- IDE/editor configuration
+- Secrets manager (1Password, AWS Secrets Manager, etc.)
+- Container/deployment environment
 
-Supported grant types include **authorization code** (preferred for third-party apps), **password** (trusted first-party only), **client credentials**, and **refresh_token**.
+> For production OAuth applications serving multiple users, see `references/authentication.md`
 
-**Calling the API:** Send the access token on every request:
+## Instructions
 
-```http
-Authorization: Bearer YOUR_ACCESS_TOKEN
+### Step 1: Verify Authentication
+
+Before making any API calls, verify the GUMROAD_ACCESS_TOKEN environment variable is set:
+
+**Test authentication:**
+```bash
+curl -H "Authorization: Bearer $GUMROAD_ACCESS_TOKEN" \
+  https://api.gumroad.com/v2/user
 ```
 
-Alternative (less preferred — token may appear in logs):
-
-```http
-GET https://api.gumroad.com/v2/user?access_token=YOUR_ACCESS_TOKEN
+**Expected success response:**
+```json
+{
+  "success": true,
+  "user": {
+    "id": "...",
+    "name": "...",
+    "email": "..."
+  }
+}
 ```
 
-**Token behavior:** Responses may include `"expires_in": null` (tokens treated as non-expiring today, but refresh tokens exist for future use).
+**If authentication fails:**
+- Check that GUMROAD_ACCESS_TOKEN is set in the environment
+- Verify the token is valid (not expired or revoked)
+- Get a new token at [Gumroad Advanced Settings](https://app.gumroad.com/settings/advanced#application-form)
 
-**Test auth:** `GET https://api.gumroad.com/v2/user` — expect `success: true` and a `user` object.
+**Token scopes** (for OAuth apps):
+- Product management: `edit_products`
+- Sales data: `view_sales`
+- Webhooks: `view_sales`
+- Refunds: `refund_sales`
+- License verification: No authentication required
 
-### Scopes (request only what you need)
+**Note:** Personal access tokens have full account access. For OAuth apps serving multiple users, see `references/authentication.md`.
 
-| Scope | Purpose |
-|-------|---------|
-| `view_public` | Basic / public profile (default-style access) |
-| `view_profile` | Detailed profile |
-| `edit_products` | Create/update/delete products |
-| `view_sales` | Sales data, customers; required for **resource subscriptions (webhooks)** |
-| `view_payouts` | Payout history |
-| `mark_sales_as_shipped` | Physical orders — shipped + tracking |
-| `refund_sales` | Refunds |
-| `edit_sales` | Resend receipts and other sale edits |
-| Revenue-share related scopes | As named in OAuth registration |
+### Step 2: Execute Common Workflows
 
-Reserved for internal use (not for public apps): `mobile_api`, `creator_api`, `unfurl`, `helper_api`.
+Choose the workflow based on user request:
 
-**Authorize URL (authorization code flow):**
+> **Reference Files:**
+> - Full endpoint documentation: `references/endpoints.md`
+> - Example API responses: `references/examples/responses.md`
+> - Rate limiting and pagination: `references/examples/rate-limiting.md`
 
-```text
-https://gumroad.com/oauth/authorize?client_id=...&redirect_uri=...&response_type=code&scope=SPACE_SEPARATED_SCOPES&state=...
+#### Workflow: List Products
+
+```bash
+curl -H "Authorization: Bearer ACCESS_TOKEN" \
+  https://api.gumroad.com/v2/products
 ```
 
-Exchange `code` at `POST /oauth/token` with `grant_type=authorization_code` and matching `redirect_uri`.
+- Returns array of products with id, name, price, sales data
+- Requires `view_public` scope minimum
+- Sales counts require `view_sales` scope
 
-## Response shape
+**Creating products:** Use templates from `templates/` folder:
+- Digital products: `templates/digital-product.json`
+- Memberships: `templates/membership-product.json`
+- Physical products: `templates/physical-product.json`
 
-JSON responses typically include `"success": true|false`. **Always check `success` in the body**, not only HTTP status — some failures may still return `200` with `success: false`.
+#### Workflow: Verify License Key
 
-Common HTTP codes: `200`, `400`, `401`, `403`, `404`, `422`, `429`, `500`. Rate limiting returns **429**; back off exponentially and prefer webhooks over tight polling.
+```bash
+curl -X POST https://api.gumroad.com/v2/licenses/verify \
+  -d "license_key=LICENSE_KEY" \
+  -d "product_id=PRODUCT_ID"
+```
 
-## Endpoint map (high level)
+**CRITICAL:** This endpoint does NOT require authentication - it’s designed for client-side use.
 
-**User:** `GET /v2/user`
-
-**Products:** `GET/POST /v2/products`, `GET/PUT/DELETE /v2/products/:id`, `PUT /v2/products/:id/enable`, `PUT /v2/products/:id/disable`
-
-**Sales:** `GET /v2/sales`, `GET /v2/sales/:id`, `PUT /v2/sales/:id/mark_as_shipped`, `PUT /v2/sales/:id/refund`, `POST /v2/sales/:id/resend_receipt`
-
-**Licenses:** `POST /v2/licenses/verify`, `PUT /v2/licenses/enable`, `PUT /v2/licenses/disable`, `PUT /v2/licenses/rotate`, `PUT /v2/licenses/decrement_uses_count`
-
-**Subscribers:** `GET /v2/products/:id/subscribers`, `GET /v2/subscribers/:id`
-
-**Offer codes:** `GET/POST /v2/products/:id/offer_codes`, `GET/PUT/DELETE /v2/products/:id/offer_codes/:code_id`
-
-**Variants:** `GET/POST .../variant_categories`, `GET/POST .../variants`, etc.
-
-**Custom fields:** `GET/POST/PUT/DELETE /v2/products/:id/custom_fields/...`
-
-**Payouts:** `GET /v2/payouts`, `GET /v2/payouts/:id`, `GET /v2/payouts/upcoming`
-
-**Webhooks (resource subscriptions):** `GET /v2/resource_subscriptions`, `PUT /v2/resource_subscriptions`, `DELETE /v2/resource_subscriptions/:id`
-
-## Operations that agents use often
-
-### List products
-
-`GET https://api.gumroad.com/v2/products` with Bearer token. Requires `view_public` or a public-class scope. `sales_count` / `sales_usd_cents` on each product need **`view_sales`**.
-
-### List sales (pagination)
-
-`GET https://api.gumroad.com/v2/sales` requires **`view_sales`**.
-
-- **Use cursor pagination:** pass `page_key` from the previous response’s `next_page_key`. The `page` parameter is **deprecated** and may time out on large datasets.
-- **Filters:** `after`, `before` (dates as `YYYY-MM-DD`), `email`, `product_id`, `order_id`.
-- Typical page size: **10** sales per response (per docs).
-
-### Verify a license (often unauthenticated)
-
-`POST https://api.gumroad.com/v2/licenses/verify` with form body:
-
+Parameters:
 - `license_key` (required)
-- `product_id` **strongly recommended**; may be required for newer products
-- `permalink` — alternative to `product_id`
-- `increment_uses_count` — default behavior increments uses; use `false` for checks without bumping the counter
+- `product_id` (strongly recommended)
+- `increment_uses_count=false` (optional - use for checks without incrementing counter)
 
-This endpoint is commonly called **without** a Bearer token from shipped apps. Handle `success: false` and 404-style error messages for invalid/disabled/expired licenses.
+Success response: `{"success": true, "purchase": {...}, "uses": N}`
 
-### Webhooks (resource subscriptions)
+**Implementation example:** See `templates/license-validator.js` for complete client-side validation code
 
-Requires **`view_sales`**. Subscribe with `PUT /v2/resource_subscriptions` and form fields `resource_name` + `post_url`.
+#### Workflow: Fetch Sales Data
 
-**Resource names include:** `sale`, `refund`, `cancellation`, `subscription_ended`, `subscription_restarted`, `subscription_updated`, `dispute`, `dispute_won`.
+```bash
+curl -H "Authorization: Bearer ACCESS_TOKEN" \
+  "https://api.gumroad.com/v2/sales?page_key=PAGE_KEY"
+```
 
-`post_url` must be reachable (no localhost in production docs). Verify deliveries by cross-checking critical data (e.g. sale lookup) per Gumroad guidance.
+**IMPORTANT:** Use cursor pagination with `page_key`, NOT the deprecated `page` parameter.
 
-## Security
+- Requires `view_sales` scope
+- Returns ~10 sales per page
+- Get next page: Use `next_page_key` from response
+- Filter options: `after`, `before` (YYYY-MM-DD), `email`, `product_id`, `order_id`
 
-- Never commit client secrets or access tokens; use environment variables or a secrets manager.
-- Prefer `Authorization: Bearer` over query-string tokens.
-- Use `state` in OAuth to mitigate CSRF.
+#### Workflow: Set Up Webhooks
 
-## When to open reference.md
+```bash
+curl -X PUT -H "Authorization: Bearer ACCESS_TOKEN" \
+  https://api.gumroad.com/v2/resource_subscriptions \
+  -d "resource_name=sale" \
+  -d "post_url=https://example.com/webhook"
+```
 
-For per-endpoint request/response fields, errors, and examples, use [reference.md](reference.md) and follow links to the specific doc page.
+- Requires `view_sales` scope
+- Resource names: `sale`, `refund`, `cancellation`, `subscription_ended`, `subscription_restarted`, `subscription_updated`, `dispute`, `dispute_won`
+- `post_url` must be publicly accessible (no localhost)
+- **Security:** Verify webhook authenticity by cross-checking data with GET /v2/sales/:id
+
+**Implementation example:** See `templates/webhook-handler.py` for complete webhook receiver with verification
+
+### Step 3: Handle Responses
+
+**CRITICAL:** Always check the `success` field in the response body:
+
+```json
+{
+  "success": true,  // Check this FIRST
+  "data": {...}
+}
+```
+
+Even HTTP 200 responses may contain `"success": false` with error details.
+
+Common HTTP codes:
+- `200`: Request processed (check `success` in body)
+- `401`: Authentication failed
+- `404`: Resource not found
+- `422`: Validation error
+- `429`: Rate limited (back off exponentially)
+
+> For complete error handling guide, see `references/error-codes.md`
+
+## Examples
+
+### Example 1: Build License Verification Script
+
+User says: "Help me verify Gumroad licenses in my app"
+
+Actions:
+1. Explain that license verification does NOT require authentication
+2. Show how to POST to `/v2/licenses/verify` with `license_key` and `product_id`
+3. Demonstrate handling `success: false` for invalid/disabled licenses
+4. Recommend using `increment_uses_count=false` for non-activating checks
+
+Result: Working license verification code that handles all edge cases
+
+### Example 2: Sales Analytics Script
+
+User says: "Fetch all my sales from last month"
+
+Actions:
+1. Verify `view_sales` scope is available
+2. Calculate date range: `after=YYYY-MM-DD&before=YYYY-MM-DD`
+3. Implement cursor pagination with `page_key`
+4. Aggregate results across all pages
+5. Handle rate limits with exponential backoff
+
+Result: Complete sales data for the specified period
+
+### Example 3: Webhook Integration
+
+User says: "Set up a webhook to notify me of new sales"
+
+Actions:
+1. Confirm `view_sales` scope
+2. Create webhook: `PUT /v2/resource_subscriptions` with `resource_name=sale`
+3. Provide endpoint URL handling code
+4. Explain webhook verification strategy
+5. Show how to test with a real purchase
+
+Result: Working webhook that triggers on new sales
+
+## Troubleshooting
+
+### Error: "Token not provided"
+
+**Cause:** Missing or incorrectly formatted Authorization header
+
+**Solution:**
+- Use: `Authorization: Bearer YOUR_TOKEN`
+- NOT: `Authorization: YOUR_TOKEN`
+- Verify token is not expired
+
+### Error: "Invalid license key"
+
+**Cause:** License key doesn’t exist, was refunded, or is disabled
+
+**Solution:**
+- Check `success: false` in response body
+- Verify `product_id` matches the license
+- Check if license has been disabled or refunded via dashboard
+- Inspect `purchase` object in successful responses for status
+
+### Error: Rate limit (429)
+
+**Cause:** Too many requests in short time
+
+**Solution:**
+- Implement exponential backoff (wait 2s, 4s, 8s, etc.)
+- Use webhooks instead of polling for real-time data
+- Cache responses when appropriate
+
+### Pagination Timing Out
+
+**Cause:** Using deprecated `page` parameter on large datasets
+
+**Solution:**
+- Switch to cursor pagination with `page_key`
+- Use: `GET /v2/sales?page_key=CURSOR_FROM_PREVIOUS_RESPONSE`
+- Continue until `next_page_key` is null
+
+## API Reference Quick Links
+
+**Base URL:** `https://api.gumroad.com/v2`
+
+**Key Endpoints:**
+- User: `GET /user`
+- Products: `GET/POST /products`, `GET/PUT/DELETE /products/:id`
+- Sales: `GET /sales`, `GET /sales/:id`
+- Licenses: `POST /licenses/verify`, `PUT /licenses/enable`, `PUT /licenses/disable`
+- Webhooks: `GET /resource_subscriptions`, `PUT /resource_subscriptions`, `DELETE /resource_subscriptions/:id`
+
+**Documentation:** [gumroad.com/api](https://gumroad.com/api)
+
+## Security Best Practices
+
+- **Never hardcode tokens:** Use environment variables or secrets manager
+- **Use Bearer auth:** Avoid query-string tokens (they appear in logs)
+- **Implement CSRF protection:** Use `state` parameter in OAuth flow
+- **Verify webhook signatures:** Cross-check webhook data with API lookups
+- **Rotate compromised tokens:** Immediately regenerate if tokens are exposed
