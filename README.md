@@ -12,19 +12,50 @@ This is a [Claude Skill](https://docs.anthropic.com/claude/docs/skills) that tea
 - 🛡️ Error handling examples
 - 🚀 Quick start guide
 
-## Installation
+## Quick Start
 
-### For Claude.ai Users
+**Recommended:** Install using the [skills.sh](https://skills.sh) CLI:
 
+```bash
+npx skills add https://github.com/walkingriver/gumroad-api-skill -g -a cursor -a claude-code
+```
+
+This installs the skill globally (`-g`) for both Cursor and Claude Code agents (`-a`).
+
+### Installation Options
+
+**For any AI agent:**
+```bash
+# Install globally for specific agents
+npx skills add https://github.com/walkingriver/gumroad-api-skill -g -a <agent-name>
+
+# Install for all agents
+npx skills add https://github.com/walkingriver/gumroad-api-skill --all
+
+# Install for current project only (no -g flag)
+npx skills add https://github.com/walkingriver/gumroad-api-skill -a cursor
+```
+
+**Common flags:**
+- `-g, --global` - Install globally (user-level) instead of project-level
+- `-a, --agent` - Specify which agent(s) to install for (cursor, claude-code, cline, etc.)
+- `-y, --yes` - Skip confirmation prompts
+- `--all` - Install for all agents with all skills
+- `-l, --list` - List available skills in the repo without installing
+
+**Supported agents:** cursor, claude-code, cline, windsurf, github-copilot, vscode, and more
+
+### Alternative Installation Methods
+
+**For Claude.ai Users:**
 1. Download this repository as a ZIP file
 2. Open Claude.ai → Settings → Skills
 3. Click "Upload skill" and select the ZIP file
 4. Enable the Gumroad API skill
 
-### For Claude Code Users
-
+**Manual Installation (Claude Code):**
 1. Clone or download this repository
-2. Place it in your Claude Code skills directory:
+2. Place it in your skills directory:
    ```bash
    # Mac/Linux
    ~/.claude/skills/gumroad-api/
@@ -32,6 +63,21 @@ This is a [Claude Skill](https://docs.anthropic.com/claude/docs/skills) that tea
    # Windows
    %USERPROFILE%\.claude\skills\gumroad-api\
    ```
+
+### Verify Installation
+
+After installation, verify the skill is available:
+
+```bash
+# List installed skills
+npx skills list -g
+
+# Or check your agent's skills directory
+ls ~/.claude/skills/           # Claude Code
+ls ~/.cursor/skills/           # Cursor
+```
+
+Ask your AI agent: "Do you have access to the Gumroad API skill?" It should confirm and describe what it can do.
 
 ## What's Included
 
@@ -69,6 +115,21 @@ Once installed, ask Claude:
 - "Show me how to implement license verification in my app"
 
 Claude will automatically use the skill to guide you through the workflows.
+
+### Updating the Skill
+
+Keep your skill up to date with the latest API changes and improvements:
+
+```bash
+# Update all globally installed skills
+npx skills update -g
+
+# Update specific skill
+npx skills update gumroad-api-skill -g
+
+# Update with auto-confirm
+npx skills update -g -y
+```
 
 ---
 
