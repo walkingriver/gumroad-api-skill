@@ -103,7 +103,28 @@ gumroad-api-skill/
 
 **⚠️ Important:** Gumroad product descriptions use **HTML**, not Markdown. See `references/product-descriptions.md` for complete formatting guide with examples.
 
-## Usage Examples
+## Usage
+
+### Invoking the Skill
+
+**Direct invocation with slash command:**
+```
+/gumroad-api
+```
+
+This explicitly loads the skill and asks Claude to help with Gumroad API tasks.
+
+**Automatic activation:**
+
+The skill activates automatically when you mention keywords like:
+- "Gumroad"
+- "verify license"
+- "list my products"
+- "check sales"
+- "set up webhooks"
+- "Gumroad API"
+
+### Example Requests
 
 Once installed, ask Claude:
 
@@ -113,6 +134,11 @@ Once installed, ask Claude:
 - "Create a new product with these details"
 - "Fetch all sales from last month"
 - "Show me how to implement license verification in my app"
+
+Or use the slash command first:
+```
+/gumroad-api help me create a new digital product
+```
 
 Claude will automatically use the skill to guide you through the workflows.
 
