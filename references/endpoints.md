@@ -10,6 +10,13 @@ Use this file when you need endpoint-specific parameters beyond `SKILL.md`.
 - Workaround: Upload covers manually through [app.gumroad.com/products](https://app.gumroad.com/products)
 - Tested parameters that don't work: `cover`, `cover_file`, `thumbnail` on `PUT /v2/products/:id`
 
+**Product Content Files:**
+- Product content files (PDFs, ZIPs, ebooks, etc.) **cannot be uploaded via the REST API**
+- No file upload endpoint exists (`POST /v2/products/:id/files` returns 404)
+- Parameters like `file` and `content_file` are accepted but not processed on `PUT /v2/products/:id`
+- Workaround: Upload content files manually through [app.gumroad.com/products](https://app.gumroad.com/products)
+- This is a significant limitation for automating product creation workflows
+
 ## Official entry points
 
 - [Gumroad API (landing)](https://gumroad.com/api) — public API documentation entry

@@ -93,11 +93,19 @@ curl -H "Authorization: Bearer ACCESS_TOKEN" \
 
 **IMPORTANT:** Product descriptions use **HTML, not Markdown**. Use `<h2>`, `<p>`, `<ul>`, `<li>`, `<strong>`, `<em>` tags for formatting.
 
-**API Limitation - Product Cover Images:**
+**API Limitations:**
+
+*Product Cover Images:*
 - Cover images and thumbnails **cannot** be uploaded via the REST API
 - The API accepts image files but does not process them
 - Product covers must be uploaded manually through the Gumroad web dashboard at [app.gumroad.com/products](https://app.gumroad.com/products)
 - This applies to all product update endpoints including `PUT /v2/products/:id`
+
+*Product Content Files:*
+- Product content files (PDFs, ZIPs, etc.) **cannot** be uploaded via the REST API
+- No file upload endpoint exists in the REST API
+- Product files must be uploaded manually through the Gumroad web dashboard at [app.gumroad.com/products](https://app.gumroad.com/products)
+- Tested endpoints that don't exist: `POST /v2/products/:id/files`
 
 #### Workflow: Verify License Key
 
