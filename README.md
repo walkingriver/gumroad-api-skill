@@ -42,17 +42,20 @@ gumroad-api-skill/
 │   ├── authentication.md                # OAuth & token management
 │   ├── endpoints.md                     # Full API endpoint reference
 │   ├── error-codes.md                   # Complete error guide
+│   ├── product-descriptions.md          # ⭐ HTML formatting guide
 │   └── examples/
 │       ├── rate-limiting.md             # Pagination & retry logic
 │       └── responses.md                 # Example API responses
 └── templates/                           # Ready-to-use code
-    ├── digital-product.json             # Product creation template
-    ├── membership-product.json          # Subscription template
-    ├── physical-product.json            # Physical goods template
+    ├── digital-product.json             # Product creation template (HTML)
+    ├── membership-product.json          # Subscription template (HTML)
+    ├── physical-product.json            # Physical goods template (HTML)
     ├── webhook-handler.py               # Flask webhook receiver
     ├── license-validator.js             # Client-side validation
     └── simple-test.sh                   # Quick API test script
 ```
+
+**⚠️ Important:** Gumroad product descriptions use **HTML**, not Markdown. See `references/product-descriptions.md` for complete formatting guide with examples.
 
 ## Usage Examples
 

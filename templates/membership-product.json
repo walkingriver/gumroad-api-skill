@@ -1,6 +1,6 @@
 {
   "name": "Monthly Membership",
-  "description": "Get access to exclusive content, resources, and community.\n\n## What's Included\n\n- Weekly tutorials and guides\n- Private Discord community\n- Early access to new content\n- Download library of resources\n- Monthly Q&A sessions",
+  "description": "<h2><strong>Join Our Exclusive Community</strong></h2>\n\n<p>Get access to exclusive content, resources, and community.</p>\n\n<h3><strong>What's Included</strong></h3>\n\n<ul>\n<li>Weekly tutorials and guides</li>\n<li>Private Discord community</li>\n<li>Early access to new content</li>\n<li>Download library of resources</li>\n<li>Monthly Q&A sessions</li>\n</ul>",
   "price": 999,
   "currency": "usd",
   "recurrence": "monthly",

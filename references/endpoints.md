@@ -2,6 +2,14 @@
 
 Use this file when you need endpoint-specific parameters beyond `SKILL.md`.
 
+## Known API Limitations
+
+**Product Cover Images:**
+- Cover images and thumbnails **cannot be uploaded via the REST API**
+- Parameters like `cover`, `cover_file`, and `thumbnail` are accepted but not processed
+- Workaround: Upload covers manually through [app.gumroad.com/products](https://app.gumroad.com/products)
+- Tested parameters that don't work: `cover`, `cover_file`, `thumbnail` on `PUT /v2/products/:id`
+
 ## Official entry points
 
 - [Gumroad API (landing)](https://gumroad.com/api) — public API documentation entry

@@ -1,6 +1,6 @@
 {
   "name": "Your Product Name",
-  "description": "Detailed product description that will appear on the product page. This supports markdown formatting.\n\n- Key feature 1\n- Key feature 2\n- Key feature 3",
+  "description": "<h2><strong>Your Product Headline</strong></h2>\n\n<p>Detailed product description that will appear on the product page. <strong>Use HTML, not Markdown.</strong> Gumroad renders HTML tags.</p>\n\n<h3><strong>Key Features</strong></h3>\n\n<ul>\n<li>Key feature 1</li>\n<li>Key feature 2</li>\n<li>Key feature 3</li>\n</ul>\n\n<p><em>Call to action goes here.</em></p>",
   "price": 2900,
   "currency": "usd",
   "customizable_price": true,

@@ -1,6 +1,6 @@
 {
   "name": "Physical Product Name",
-  "description": "Description of your physical product.\n\n## Product Details\n\n- Dimensions: 8\" x 10\"\n- Weight: 1.5 lbs\n- Materials: High-quality materials\n- Ships within 3-5 business days",
+  "description": "<h2><strong>Premium Physical Product</strong></h2>\n\n<p>Description of your physical product.</p>\n\n<h3><strong>Product Details</strong></h3>\n\n<ul>\n<li>Dimensions: 8\" x 10\"</li>\n<li>Weight: 1.5 lbs</li>\n<li>Materials: High-quality materials</li>\n<li>Ships within 3-5 business days</li>\n</ul>",
   "price": 4900,
   "currency": "usd",
   "customizable_price": false,

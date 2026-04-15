@@ -91,6 +91,14 @@ curl -H "Authorization: Bearer ACCESS_TOKEN" \
 - Memberships: `templates/membership-product.json`
 - Physical products: `templates/physical-product.json`
 
+**IMPORTANT:** Product descriptions use **HTML, not Markdown**. Use `<h2>`, `<p>`, `<ul>`, `<li>`, `<strong>`, `<em>` tags for formatting.
+
+**API Limitation - Product Cover Images:**
+- Cover images and thumbnails **cannot** be uploaded via the REST API
+- The API accepts image files but does not process them
+- Product covers must be uploaded manually through the Gumroad web dashboard at [app.gumroad.com/products](https://app.gumroad.com/products)
+- This applies to all product update endpoints including `PUT /v2/products/:id`
+
 #### Workflow: Verify License Key
 
 ```bash
